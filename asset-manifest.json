@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/studentsdrivesafe/static/css/main.e6c13ad2.css",
+    "main.js": "/studentsdrivesafe/static/js/main.d65671a8.js",
+    "static/js/787.9e2ab025.chunk.js": "/studentsdrivesafe/static/js/787.9e2ab025.chunk.js",
+    "index.html": "/studentsdrivesafe/index.html",
+    "main.e6c13ad2.css.map": "/studentsdrivesafe/static/css/main.e6c13ad2.css.map",
+    "main.d65671a8.js.map": "/studentsdrivesafe/static/js/main.d65671a8.js.map",
+    "787.9e2ab025.chunk.js.map": "/studentsdrivesafe/static/js/787.9e2ab025.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.d65671a8.js"
+  ]
+}
