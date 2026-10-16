@@ -1,6 +1,27 @@
 {
- "name":"studentsdrivesafe","version":"1.0.0","private":true,"type":"module","engines":{"node":">=22"},
- "scripts":{"start":"vite --host 127.0.0.1","dev":"vite --host 127.0.0.1","build":"vite build","preview":"vite preview --host 127.0.0.1","test":"node --test tests/*.test.mjs"},
- "dependencies":{"@tensorflow/tfjs-core":"4.22.0","@tensorflow/tfjs-layers":"4.22.0","@tensorflow/tfjs-backend-cpu":"4.22.0","react":"19.3.1","react-dom":"19.3.1"},
- "devDependencies":{"vite":"8.3.4","@vitejs/plugin-react":"6.1.2"}
+  "name": "studentsdrivesafe",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "vite --host 127.0.0.1",
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs-core": "4.22.0",
+    "@tensorflow/tfjs-layers": "4.22.0",
+    "@tensorflow/tfjs-backend-cpu": "4.22.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "vite": "8.3.4",
+    "@vitejs/plugin-react": "6.1.2"
+  }
 }
