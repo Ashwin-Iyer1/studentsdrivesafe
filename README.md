@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Students Drive Safe · Signal Review
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An offline research workbench for six-channel inertial-sensor sequences. Import a CSV or explore synthetic traces, run the original saved model, inspect each 100-sample window, vary the decision threshold, and export an auditable JSON report.
 
-## Available Scripts
+## Run
 
-In the project directory, you can run:
+Requires Node.js 22+ and a modern browser (Chrome, Edge or Firefox). Initial package installation needs internet; the running application uses only its own bundled assets and model.
 
-### `npm start`
+```sh
+npm ci --ignore-scripts
+npm test
+npm run dev
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+For the production bundle: `npm run build`, then `npm run preview`. Serve `dist/` over HTTP on localhost or HTTPS; opening `index.html` with `file://` will not load the worker. The app requests no motion, location or camera permissions, and makes no inference API calls. Imported data stays in memory until reload; explicit CSV/JSON downloads are the only persistence.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Workflow
 
-### `npm test`
+1. Choose a clearly labeled synthetic trace or import 100–10,000 consecutive rows.
+2. Select stride 25, 50 or 100. Each model input contains 100 distinct rows; incomplete trailing windows are omitted.
+3. Analyze. A CPU web worker verifies the original weight fingerprint, loads the fixed architecture, reports progress, and can be canceled. Changing source or stride terminates previous work and clears its results.
+4. Inspect a channel and select a window. The signal chart shades its exact sample span; the score chart always uses a 0–1 axis.
+5. Adjust the threshold without rerunning inference. Export the sequence CSV or result JSON with provenance, limitations and an explicit raw-row split plan.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+CSV headers: `Acc X,Acc Y,Acc Z,gyro_x,gyro_y,gyro_z`. Reordering is supported; an optional binary `label` column is accepted. Blank, nonnumeric, duplicate, unknown or missing columns are rejected. The CSV format is numeric and deliberately does not support quoted cells. Optional window labels follow the original notebook: at least five positive row labels in 100 samples. A score is flagged only when strictly greater than the threshold.
 
-### `npm run build`
+## Evidence and limits
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This repairs the original browser prototype's H5 loading, mutation of model architecture, and repetition of one hardcoded row. It does **not** establish road detection accuracy. The saved model responds near 0.98 on several synthetic fixtures; those are uncalibrated outputs, not safety probabilities or validated detections.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The companion [Pothole-detector notebook and model](https://github.com/Ashwin-Iyer1/Pothole-detector) define the six-feature order and 100-row input. The notebook shuffled overlapping windows before splitting, allowing raw-sample overlap between train and evaluation. Historical metrics are not independent validation. Training data, units, sensor orientation, sampling rate and a validated calibration set are unavailable. No normalization is invented here. Imported-label agreement is descriptive and affected by correlated windows.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+`public/model/` contains byte-identical existing converted artifacts from that public companion repository at `4a6a2aad56c5e42fdf647b8930d7f4ac1974c2bb`, originally present before this upgrade. The model has two bidirectional LSTM layers, one LSTM and dense layers, totaling 68,097 parameters. SHA-256 of the original weight shard:
 
-### `npm run eject`
+```text
+3c2e40c6054c6359ca445d33894a4e374891630119f881f4b93644429396c76f
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+`src/lib/signals.mjs` shares the documented numeric contract from the companion at that commit; keep both copies and regression fixtures synchronized when changing it. `legacy/` preserves the original CRA prototype and original artifacts without executing or bundling them. Existing Git history retains authorship; this upgrade makes no new claim about dataset ownership or model performance.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Verification
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+`npm test` covers sequence parsing, sample boundaries, disjoint partitioning, strict thresholds and original label rules, tampered model rejection, real-weight deterministic inference, progress, tensor cleanup, and rejection before inference. CI also builds the complete production worker. Browser checks should exercise preset → analyze → inspect → threshold → export, invalid CSV, source changes, cancellation, and a narrow layout.
